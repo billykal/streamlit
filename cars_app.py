@@ -6,11 +6,12 @@ import numpy as np
 import plotly_express as pl
 
 @st.cache(allow_output_mutation=True)
-def load(model_path, loe_path, ohe_path):
+def load(data_path, model_path, loe_path, ohe_path):
+    data = joblib.load(data_path)
     model = joblib.load(model_path)
     loe = joblib.load(loe_path)
     ohe = joblib.load(ohe_path)
-    return model, loe, ohe
+    return data, model, loe, ohe
 
 def inference(row, loe, ohe, model, feat_cols):
     df = pd.DataFrame([row], columns = feat_cols)
@@ -21,7 +22,7 @@ def inference(row, loe, ohe, model, feat_cols):
     df_ohe = ohe.transform(df_ohe)
     df_ohe = pd.DataFrame(df_ohe, columns=ohe.get_feature_names())
     df_test = df_loe.join(df_ohe).join(df[['odometer_value','year_produced']])
-    price = model.predict(df_test)
+    price = model.predict(df_test)[0]
     answer = 'The predicted price is ' + str(price)
     return answer
 
@@ -68,6 +69,8 @@ row = [manufacturer_name, color, body_type, transmission, engine_fuel, engine_ha
 if (st.button('Find Car Price')):
     feat_cols = ['manufacturer_name','color','body_type','transmission','engine_fuel','engine_has_gas','engine_type','has_warranty','state','drivetrain','odometer_value','year_produced']
     
-    model, loe, ohe = load("ranfor.joblib", "loe.joblib", "ohe.joblib")
+    data, model, loe, ohe = load("data.joblib", "ranfor.joblib", "loe.joblib", "ohe.joblib")
     result = inference(row, loe, ohe, model, feat_cols)
     st.write(result)
+    temp = data['engine_fuel'].value_counts().to_frame()
+    pl.bar(temp, temp.index, temp['engine_fuel'], labels={'index':'engine fuel', 'engine_fuel':'count'})
