@@ -22,14 +22,14 @@ def inference(row, loe, ohe, model, feat_cols):
     df_ohe = ohe.transform(df_ohe)
     df_ohe = pd.DataFrame(df_ohe, columns=ohe.get_feature_names())
     df_test = df_loe.join(df_ohe).join(df[['odometer_value','year_produced']])
-    price = model.predict(df_test)[0]
-    answer = 'The predicted price is ' + str(price)
+    price = round(model.predict(df_test)[0], 2)
+    answer = 'The predicted price is ' + str(price) + ' $.'
     return answer
 
 st.title('Car Price Prediction App')
-#st.write('The data for the following example is originally from the National Institute of Diabetes and Digestive and Kidney Diseases and contains information on females at least 21 years old of Pima Indian heritage. This is a sample application and cannot be used as a substitute for real medical advice.')
 image = Image.open("photo.jpeg")
 st.image(image, use_column_width=True)
+
 st.write('Please fill in the details of the car in the left sidebar and click on the button below!')
 
 cars = ['Ford', 'Dodge', 'Mazda', 'Audi', 'Volkswagen', 'Opel', 'Volvo',
@@ -73,4 +73,4 @@ if (st.button('Find Car Price')):
     result = inference(row, loe, ohe, model, feat_cols)
     st.write(result)
     temp = data['engine_fuel'].value_counts().to_frame()
-    pl.bar(temp, temp.index, temp['engine_fuel'], labels={'index':'engine fuel', 'engine_fuel':'count'})
+    st.write(pl.bar(temp, temp.index, temp['engine_fuel'], labels={'index':'engine fuel', 'engine_fuel':'count'}))
