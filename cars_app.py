@@ -4,6 +4,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 import plotly_express as pl
+import plotly.graph_objs as go
 
 @st.cache(allow_output_mutation=True)
 def load(data_path, model_path, loe_path, ohe_path):
@@ -66,11 +67,37 @@ year_produced = st.sidebar.slider('Year Produced', 1950, 2019, 2015, 1)
 
 row = [manufacturer_name, color, body_type, transmission, engine_fuel, engine_has_gas, engine_type, warranty, state, drivetrains, odometer_value, year_produced]
 
+
+
 if (st.button('Find Car Price')):
     feat_cols = ['manufacturer_name','color','body_type','transmission','engine_fuel','engine_has_gas','engine_type','has_warranty','state','drivetrain','odometer_value','year_produced']
     
     data, model, loe, ohe = load("data.joblib", "ranfor.joblib", "loe.joblib", "ohe.joblib")
     result = inference(row, loe, ohe, model, feat_cols)
     st.write(result)
-    temp = data['engine_fuel'].value_counts().to_frame()
-    st.write(pl.bar(temp, temp.index, temp['engine_fuel'], labels={'index':'engine fuel', 'engine_fuel':'count'}))
+    temp2 = data['manufacturer_name'].value_counts().to_frame()
+    st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
+    
+    fig = go.Figure()
+    dropdown = []
+    true_false = [False]*55
+    cars = sorted(data['manufacturer_name'].unique())
+    default = manufacturer_name
+    
+    for i, company in enumerate(cars):
+        temp = data[data['manufacturer_name']==company][['engine_fuel','price_usd']]
+        fig.add_trace(go.Box(x=temp['engine_fuel'], y=temp['price_usd'], name=company, visible=(company==default)))
+        true_false2 = true_false.copy()
+        true_false2[i] = True
+        dropdown.append({'method':'update',
+                         'label':company,
+                         'args': [{"visible": true_false2}, 
+                                  {"title": company}]
+                        })
+    
+    updatemenus = [{'buttons':dropdown,
+                    'direction':'down',
+                    'showactive':False,
+                    'active': cars.index(default)}]
+    fig.update_layout(updatemenus=updatemenus, showlegend=True)
+    st.plotly_chart(fig)
