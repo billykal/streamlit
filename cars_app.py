@@ -13,7 +13,12 @@ def load(data_path, model_path):
     return data, model #, explainer
 
 def inference(new_case, model, feat_cols):
-    case_to_predict = pd.DataFrame([new_case], dtype=['category','category','category','category','category','category','category','category','category','category','category','int64','int64'])
+    case_to_predict = pd.DataFrame([new_case]) #, columns = feat_cols)
+    categoricals = ['manufacturer_name', 'model_name', 'transmission', 'color',
+       'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
+       'has_warranty', 'state', 'drivetrain']
+    for feature in categoricals:
+        case_to_predict[feature] = pd.Series(case_to_predict[feature], dtype="category")
     price = round(model.predict(case_to_predict)[0], 2)
     answer = 'The predicted price is ' + str(price) + ' $.'
     return answer
