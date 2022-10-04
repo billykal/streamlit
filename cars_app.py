@@ -13,7 +13,7 @@ def load(data_path, model_path):
     return data, model #, explainer
 
 def inference(new_case, model, feat_cols):
-    case_to_predict = pd.DataFrame([new_case], columns = feat_cols)
+    case_to_predict = pd.DataFrame([new_case])
     price = round(model.predict(case_to_predict)[0], 2)
     answer = 'The predicted price is ' + str(price) + ' $.'
     return answer
