@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import pickle
-from plotly import plotly as pl
+from chart_studio import plotly as pl
 import plotly.graph_objs as go
 
 @st.cache(allow_output_mutation=True)
