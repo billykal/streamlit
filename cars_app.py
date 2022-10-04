@@ -12,8 +12,11 @@ def load(data_path, model_path):
     # explainer = pickle.load(open(explainer_path, 'rb'))
     return data, model #, explainer
 
-def inference(new_case, model, feat_cols):
-    case_to_predict = pd.DataFrame([new_case]) #, columns = feat_cols)
+def inference(new_case, model):
+    feat_cols = ['manufacturer_name', 'model_name', 'transmission', 'color',
+       'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
+       'has_warranty', 'state', 'drivetrain', 'year_produced','odometer_value']
+    case_to_predict = pd.DataFrame([new_case], columns = feat_cols)
     categoricals = ['manufacturer_name', 'model_name', 'transmission', 'color',
        'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
        'has_warranty', 'state', 'drivetrain']
@@ -70,7 +73,7 @@ new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, eng
 if (st.button('Find Car Price')):
     
     data, model = load("dataset.pickle", "model.pickle")
-    result = inference(new_case, model, data.columns)
+    result = inference(new_case, model)
     st.write(result)
     temp2 = data['manufacturer_name'].value_counts().to_frame()
     st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
