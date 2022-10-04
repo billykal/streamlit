@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import pandas as pd
 from PIL import Image
 import pickle
@@ -7,9 +7,9 @@ import plotly.graph_objs as go
 
 @st.cache(allow_output_mutation=True)
 def load(data_path, model_path, explainer_path):
-    data = pickle.load(data_path)
-    model = pickle.load(model_path)
-    explainer = pickle.load(explainer_path)
+    data = pickle.load(open(data_path, 'rb'))
+    model = pickle.load(open(model_path, 'rb'))
+    explainer = pickle.load(open(explainer_path, 'rb'))
     return data, model, explainer
 
 def inference(new_case, model, feat_cols):
@@ -64,7 +64,7 @@ new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, eng
 
 if (st.button('Find Car Price')):
     
-    data, model, explainer = load("dataset_pickle", "model.pickle", "explainer.pickle")
+    data, model, explainer = load("dataset.pickle", "model.pickle", "explainer.pickle")
     result = inference(new_case, model, data.columns)
     st.write(result)
     temp2 = data['manufacturer_name'].value_counts().to_frame()
