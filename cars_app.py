@@ -71,7 +71,6 @@ new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, eng
 
 
 if (st.button('Find Car Price')):
-    
     data, model = load("dataset.pickle", "model.pickle")
     result = inference(new_case, model)
     st.write(result)
