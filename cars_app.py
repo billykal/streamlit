@@ -84,7 +84,7 @@ if (st.button('Find Car Price')):
     # cars = sorted(data['manufacturer_name'].unique())
     # default = manufacturer_name
     
-    # for i, company in enumerate(cars): 
+    # for i, company in enumerate(cars):
     #     temp = data[data['manufacturer_name']==company][['engine_fuel','price_usd']]
     #     fig.add_trace(go.Box(x=temp['engine_fuel'], y=temp['price_usd'], name=company, visible=(company==default)))
     #     true_false2 = true_false.copy()
