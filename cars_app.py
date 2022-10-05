@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import pickle
-from chart_studio import plotly as pl
+import plotly.express as pl
 import plotly.graph_objs as go
 
 @st.cache(allow_output_mutation=True)
@@ -74,8 +74,8 @@ if (st.button('Find Car Price')):
     data, model = load("dataset.pickle", "model.pickle")
     result = inference(new_case, model)
     st.write(result)
-    # temp2 = data['manufacturer_name'].value_counts().to_frame()
-    # st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
+    temp2 = data['manufacturer_name'].value_counts().to_frame()
+    st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
     
     # fig = go.Figure()
     # dropdown = []
