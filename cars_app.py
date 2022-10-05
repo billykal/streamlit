@@ -75,29 +75,29 @@ if (st.button('Find Car Price')):
     data, model = load("dataset.pickle", "model.pickle")
     result = inference(new_case, model)
     st.write(result)
-    temp2 = data['manufacturer_name'].value_counts().to_frame()
-    st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
+    # temp2 = data['manufacturer_name'].value_counts().to_frame()
+    # st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
     
-    fig = go.Figure()
-    dropdown = []
-    true_false = [False]*55
-    cars = sorted(data['manufacturer_name'].unique())
-    default = manufacturer_name
+    # fig = go.Figure()
+    # dropdown = []
+    # true_false = [False]*55
+    # cars = sorted(data['manufacturer_name'].unique())
+    # default = manufacturer_name
     
-    for i, company in enumerate(cars):
-        temp = data[data['manufacturer_name']==company][['engine_fuel','price_usd']]
-        fig.add_trace(go.Box(x=temp['engine_fuel'], y=temp['price_usd'], name=company, visible=(company==default)))
-        true_false2 = true_false.copy()
-        true_false2[i] = True
-        dropdown.append({'method':'update',
-                         'label':company,
-                         'args': [{"visible": true_false2}, 
-                                  {"title": company}]
-                        })
+    # for i, company in enumerate(cars):
+    #     temp = data[data['manufacturer_name']==company][['engine_fuel','price_usd']]
+    #     fig.add_trace(go.Box(x=temp['engine_fuel'], y=temp['price_usd'], name=company, visible=(company==default)))
+    #     true_false2 = true_false.copy()
+    #     true_false2[i] = True
+    #     dropdown.append({'method':'update',
+    #                      'label':company,
+    #                      'args': [{"visible": true_false2}, 
+    #                               {"title": company}]
+    #                     })
     
-    updatemenus = [{'buttons':dropdown,
-                    'direction':'down',
-                    'showactive':False,
-                    'active': cars.index(default)}]
-    fig.update_layout(updatemenus=updatemenus, showlegend=True)
-    st.plotly_chart(fig)
+    # updatemenus = [{'buttons':dropdown,
+    #                 'direction':'down',
+    #                 'showactive':False,
+    #                 'active': cars.index(default)}]
+    # fig.update_layout(updatemenus=updatemenus, showlegend=True)
+    # st.plotly_chart(fig)
