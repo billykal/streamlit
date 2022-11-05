@@ -4,13 +4,14 @@ from PIL import Image
 import pickle
 import plotly.express as pl
 import plotly.graph_objs as go
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 @st.cache(allow_output_mutation=True)
 def load(data_path, model_path):
     data = pickle.load(open(data_path, 'rb'))
     model = pickle.load(open(model_path, 'rb'))
-    # explainer = pickle.load(open(explainer_path, 'rb'))
-    return data, model #, explainer
+    return data, model
 
 def inference(new_case, model):
     feat_cols = ['manufacturer_name', 'model_name', 'transmission', 'color',
@@ -27,7 +28,10 @@ def inference(new_case, model):
     return answer
 
 st.title('Car Price Prediction App')
+
+
 image = Image.open("photo.jpeg")
+# image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
 st.image(image, use_column_width=True)
 
 st.write('Please fill in the details of the car in the left sidebar and click on the button below!')
@@ -70,13 +74,18 @@ odometer_value = st.sidebar.slider("Odometer value", 0, 1000000, 1000, 100)
 new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, engine_has_gas, engine_type, body_type, warranty, state, drivetrains, year_produced, odometer_value]
 
 
+#### Prediction and Boxplots
 if (st.button('Find Car Price')):
+    
+    ## A: Read the data, load the model, make the prediction and print it
     data, model = load("dataset.pickle", "model.pickle")
+    # data, model = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
     result = inference(new_case, model)
     st.write(result)
-    temp2 = data['manufacturer_name'].value_counts().to_frame()
-    st.write(pl.bar(temp2, temp2.index, temp2['manufacturer_name'], labels={'index':'Manufacturer', 'manufacturer_name':'Count'}))
+    st.write('----------------------------------------------------------------------------------------------------------------')
     
+    ## B: Boxplots
+    st.write('See the price ranges per Manufacturer and Engine fuel:')
     fig = go.Figure()
     dropdown = []
     true_false = [False]*55
