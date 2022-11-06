@@ -16,7 +16,8 @@ def load(data_path):
     data = pickle.load(open(data_path, 'rb'))
     return data
 
-data = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle")
+data = load("dataset.pickle")
+# data = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle")
 
 
 st.write('--------------------------------------------------------- **Some key insights:** ---------------------------------------------------------')
