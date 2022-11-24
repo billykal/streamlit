@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pickle
 import altair as alt
 
-st.set_page_config(layout="wide")  # centered
+st.set_page_config(layout="centered")  # centered, wide
 
 @st.cache(allow_output_mutation=True)
 def load(data_path):
