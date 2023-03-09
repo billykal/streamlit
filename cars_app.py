@@ -6,38 +6,107 @@ import plotly.express as pl
 import plotly.graph_objs as go
 import seaborn as sns
 import matplotlib.pyplot as plt
+import shap
+
 
 @st.cache(allow_output_mutation=True)
-def load(data_path, model_path):
+def load(data_path, model_path, explainer_path):
     data = pickle.load(open(data_path, 'rb'))
     model = pickle.load(open(model_path, 'rb'))
-    return data, model
+    explainer = pickle.load(open(explainer_path, 'rb'))
+    return data, model, explainer
 
-def inference(new_case, model):
+
+def predict_and_explain_price(new_case, model, explainer):
+    
     feat_cols = ['manufacturer_name', 'model_name', 'transmission', 'color',
        'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
        'has_warranty', 'state', 'drivetrain', 'year_produced','odometer_value']
+    
     case_to_predict = pd.DataFrame([new_case], columns = feat_cols)
+    
     categoricals = ['manufacturer_name', 'model_name', 'transmission', 'color',
        'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
        'has_warranty', 'state', 'drivetrain']
+    
     for feature in categoricals:
         case_to_predict[feature] = pd.Series(case_to_predict[feature], dtype="category")
-    price = round(model.predict(case_to_predict)[0], 2)
-    answer = 'The predicted price is ' + str(price) + ' $.'
-    return answer
+    
+    prediction = round(model.predict(case_to_predict)[0], 2)
+    predicted_price = 'The predicted price is ' + '**' + str(prediction) + '**' + ' $.'
+        
+    shap_values = explainer.shap_values(case_to_predict)
+    
+    direction = 'up' if prediction > explainer.expected_value else 'down'
+    
+    # Create a list with the Shap values for this case
+    original_sv = shap_values[0].tolist()
+    sv = original_sv.copy()
+    if direction == 'up':
+        sv = [i for i in sv if i>0]
+    else:
+        sv = [i for i in sv if i<0]
+        
+    # Get the absolute values of the list and reverse it. That way we see the "top" features, 
+    # no matter whether prediction is greater or smaller than the average value.
+    rev_sv = [abs(i) for i in sv].copy()
+    rev_sv.sort(reverse=True)
+    
+    # Keep the top 4 shap values (contributions to the prediction) and find their positions in 
+    # the original list
+    max0 = rev_sv[0] if rev_sv[0] in sv else -rev_sv[0]
+    max1 = rev_sv[1] if rev_sv[1] in sv else -rev_sv[1]
+    max2 = rev_sv[2] if rev_sv[2] in sv else -rev_sv[2]
+    max3 = rev_sv[3] if rev_sv[3] in sv else -rev_sv[3]
+    print(max0, max1, max2, max3)
+    
+    max0_index = original_sv.index(max0)
+    max1_index = original_sv.index(max1)
+    max2_index = original_sv.index(max2)
+    max3_index = original_sv.index(max3)
+    print(max0_index, max1_index, max2_index, max3_index)
+    
+    # Identify the feature names and their values 
+    feat0 = ' '.join(case_to_predict.columns[max0_index].split('_')).title()
+    feat1 = ' '.join(case_to_predict.columns[max1_index].split('_')).title()
+    feat2 = ' '.join(case_to_predict.columns[max2_index].split('_')).title()
+    feat3 = ' '.join(case_to_predict.columns[max3_index].split('_')).title()
+    
+    val0 = case_to_predict.iloc[0,max0_index]
+    val1 = case_to_predict.iloc[0,max1_index]
+    val2 = case_to_predict.iloc[0,max2_index]
+    val3 = case_to_predict.iloc[0,max3_index]
+    
+    explanation = 'The average price is ' + str(round(explainer.expected_value,2)) + '.' + '\n' + \
+                  '\n' + 'The predicted price is driven ' + direction + ' mainly because:' + '\n' \
+                  '\n' + '  a) ' + feat0 + ' is '  + str(val0) + ' and affects the price by ' + str(round(max0,2)) + '$' + '\n' \
+                  '\n' + '  b) ' + feat1 + ' is '  + str(val1) + ' and affects the price by ' + str(round(max1,2)) + '$' + '\n' \
+                  '\n' + '  c) ' + feat2 + ' is '  + str(val2) + ' and affects the price by ' + str(round(max2,2)) + '$' + '\n' \
+                  '\n' + '  d) ' + feat3 + ' is '  + str(val3) + ' and affects the price by ' + str(round(max3,2)) + '$' + '\n' 
+    
+    fig = plt.figure(figsize=(10,7))
+    shap.bar_plot(shap_values[0], case_to_predict, max_display=20)
+    
+    return predicted_price, explanation, fig
 
 st.title('Car Price Prediction App')
 
 
-# image = Image.open("photo.jpeg")
-image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
+#### Load necessary obects
+image = Image.open("photo.jpeg")
+data, model, explainer = load("dataset.pickle", 
+                              "model.pickle", 
+                              "explainer.pickle")
+
+# image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
+# data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
+#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
+#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
+
+
 st.image(image, use_column_width=True)
 
 st.write('Please fill in the details of the car in the left sidebar and click on the button below!')
-
-# data, model = load("dataset.pickle", "model.pickle")
-data, model = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
 
 
 manufacturers = data['manufacturer_name'].unique().tolist()
@@ -72,8 +141,17 @@ new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, eng
 if (st.button('Find Car Price')):
     
     ## A: Read the data, load the model, make the prediction and print it
-    result = inference(new_case, model)
-    st.write(result)
+    predicted_price, explanation, fig = predict_and_explain_price(new_case, model, explainer)
+    
+    st.write(predicted_price)
+    
+    st.write('----------------------------------------------------------------------------------------------------------------')
+    
+    st.write('**Explain the prediction**')
+    st.write(explanation)
+    st.pyplot(fig)
+    
+    
     st.write('----------------------------------------------------------------------------------------------------------------')
     
     ## B: Boxplots
