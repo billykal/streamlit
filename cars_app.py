@@ -9,8 +9,8 @@ import shap
 
 @st.cache(allow_output_mutation=True)
 def load(data_path, model_path, explainer_path):
-    data = pickle.load(open(data_path, 'rb'))
-    model = pickle.load(open(model_path, 'rb'))
+    data =      pickle.load(open(data_path, 'rb'))
+    model =     pickle.load(open(model_path, 'rb'))
     explainer = pickle.load(open(explainer_path, 'rb'))
     return data, model, explainer
 
@@ -92,14 +92,14 @@ st.title('Car Price Prediction App')
 
 #### Load necessary obects
 image = Image.open("photo.jpeg")
-# data, model, explainer = load("dataset.pickle", 
-#                               "model.pickle", 
-#                               "explainer.pickle")
+data, model, explainer = load("dataset.pickle", 
+                              "model.pickle", 
+                              "explainer.pickle")
 
 # image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
-data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
-                              "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
-                              "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
+# data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
+#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
+#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
 
 
 st.image(image, use_column_width=True)
