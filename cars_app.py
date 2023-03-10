@@ -91,12 +91,12 @@ st.title('Car Price Prediction App')
 
 
 #### Load necessary obects
-# image = Image.open("photo.jpeg")
+image = Image.open("photo.jpeg")
 # data, model, explainer = load("dataset.pickle", 
 #                               "model.pickle", 
 #                               "explainer.pickle")
 
-image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
+# image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
 data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
