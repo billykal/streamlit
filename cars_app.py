@@ -2,9 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import pickle
-import plotly.express as pl
 import plotly.graph_objs as go
-import seaborn as sns
 import matplotlib.pyplot as plt
 import shap
 
@@ -93,15 +91,15 @@ st.title('Car Price Prediction App')
 
 
 #### Load necessary obects
-image = Image.open("photo.jpeg")
-data, model, explainer = load("dataset.pickle", 
-                              "model.pickle", 
-                              "explainer.pickle")
+# image = Image.open("photo.jpeg")
+# data, model, explainer = load("dataset.pickle", 
+#                               "model.pickle", 
+#                               "explainer.pickle")
 
-# image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
-# data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
-#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
-#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
+image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
+data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
+                              "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
+                              "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
 
 
 st.image(image, use_column_width=True)
