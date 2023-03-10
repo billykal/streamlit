@@ -8,14 +8,13 @@ import shap
 
 
 @st.cache(allow_output_mutation=True)
-def load(data_path, model_path, explainer_path):
+def load(data_path, model_path):
     data =      pickle.load(open(data_path, 'rb'))
     model =     pickle.load(open(model_path, 'rb'))
-    explainer = pickle.load(open(explainer_path, 'rb'))
-    return data, model, explainer
+    return data, model
 
 
-def predict_and_explain_price(new_case, model, explainer):
+def predict_and_explain_price(new_case, model):
     
     feat_cols = ['manufacturer_name', 'model_name', 'transmission', 'color',
        'engine_fuel', 'engine_has_gas', 'engine_type', 'body_type',
@@ -33,6 +32,7 @@ def predict_and_explain_price(new_case, model, explainer):
     prediction = round(model.predict(case_to_predict)[0], 2)
     predicted_price = 'The predicted price is ' + '**' + str(prediction) + '**' + ' $.'
         
+    explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(case_to_predict)
     
     direction = 'up' if prediction > explainer.expected_value else 'down'
@@ -91,15 +91,14 @@ st.title('Car Price Prediction App')
 
 
 #### Load necessary obects
+
 image = Image.open("photo.jpeg")
-data, model, explainer = load("dataset.pickle", 
-                              "model.pickle", 
-                              "explainer.pickle")
+data, model = load("dataset.pickle", 
+                    "model.pickle")
 
 # image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
-# data, model, explainer = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
-#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle",
-#                               "/Users/vasiliskalyvas/Documents/GitHub/streamlit/explainer.pickle")
+# data, model = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
+#                    "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
 
 
 st.image(image, use_column_width=True)
@@ -139,7 +138,7 @@ new_case = [manufacturer_name, model_name, transmission, color, engine_fuel, eng
 if (st.button('Find Car Price')):
     
     ## A: Read the data, load the model, make the prediction and print it
-    predicted_price, explanation, fig = predict_and_explain_price(new_case, model, explainer)
+    predicted_price, explanation, fig = predict_and_explain_price(new_case, model)
     
     st.write(predicted_price)
     
