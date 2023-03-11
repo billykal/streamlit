@@ -6,11 +6,12 @@ import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 import shap
 
+st.set_page_config(layout="centered")  # centered, wide
 
 @st.cache(allow_output_mutation=True)
 def load(data_path, model_path):
-    data =      pickle.load(open(data_path, 'rb'))
-    model =     pickle.load(open(model_path, 'rb'))
+    data  = pickle.load(open(data_path, 'rb'))
+    model = pickle.load(open(model_path, 'rb'))
     return data, model
 
 
@@ -30,7 +31,7 @@ def predict_and_explain_price(new_case, model):
         case_to_predict[feature] = pd.Series(case_to_predict[feature], dtype="category")
     
     prediction = round(model.predict(case_to_predict)[0], 2)
-    predicted_price = 'The predicted price is ' + '**' + str(prediction) + '**' + ' $.'
+    predicted_price = 'The predicted price is **' + str(prediction) + '** $.'
         
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(case_to_predict)
@@ -76,11 +77,11 @@ def predict_and_explain_price(new_case, model):
     val3 = case_to_predict.iloc[0,max3_index]
     
     explanation = 'The average price is ' + str(round(explainer.expected_value,2)) + '.' + '\n' + \
-                  '\n' + 'The predicted price is driven ' + direction + ' mainly because:' + '\n' \
-                  '\n' + '  a) ' + feat0 + ' is '  + str(val0) + ' and affects the price by ' + str(round(max0,2)) + '$' + '\n' \
-                  '\n' + '  b) ' + feat1 + ' is '  + str(val1) + ' and affects the price by ' + str(round(max1,2)) + '$' + '\n' \
-                  '\n' + '  c) ' + feat2 + ' is '  + str(val2) + ' and affects the price by ' + str(round(max2,2)) + '$' + '\n' \
-                  '\n' + '  d) ' + feat3 + ' is '  + str(val3) + ' and affects the price by ' + str(round(max3,2)) + '$' + '\n' 
+                  '\n' + 'The predicted price is driven **' + direction + '** mainly because:' + '\n' \
+                  '\n' + '  a) **' + feat0 + '** is '  + str(val0) + ' and affects the price by **' + str(round(max0,2)) + '$**' + '\n' \
+                  '\n' + '  b) **' + feat1 + '** is '  + str(val1) + ' and affects the price by **' + str(round(max1,2)) + '$**' + '\n' \
+                  '\n' + '  c) **' + feat2 + '** is '  + str(val2) + ' and affects the price by **' + str(round(max2,2)) + '$**' + '\n' \
+                  '\n' + '  d) **' + feat3 + '** is '  + str(val3) + ' and affects the price by **' + str(round(max3,2)) + '$**' + '\n' 
     
     fig = plt.figure(figsize=(10,7))
     shap.bar_plot(shap_values[0], case_to_predict, max_display=20)
@@ -98,7 +99,7 @@ data, model = load("dataset.pickle",
 
 # image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
 # data, model = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
-#                    "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
+#                     "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
 
 
 st.image(image, use_column_width=True)
@@ -139,15 +140,14 @@ if (st.button('Find Car Price')):
     
     ## A: Read the data, load the model, make the prediction and print it
     predicted_price, explanation, fig = predict_and_explain_price(new_case, model)
-    
-    st.write(predicted_price)
+    st.subheader(predicted_price)
     
     st.write('----------------------------------------------------------------------------------------------------------------')
-    
-    st.write('**Explain the prediction**')
+
+    st.subheader('Explain the prediction')
     st.write(explanation)
+    st.write('The contribution of all parameters (including the above) is the following (red when the parameter increases the predicted price, blue otherwise):', unsafe_allow_html=True)
     st.pyplot(fig)
-    
     
     st.write('----------------------------------------------------------------------------------------------------------------')
     

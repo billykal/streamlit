@@ -2,7 +2,7 @@ import streamlit as st
 import pickle
 import altair as alt
 
-st.set_page_config(layout="centered")  # centered, wide
+st.set_page_config(layout="wide")  # centered, wide
 
 @st.cache(allow_output_mutation=True)
 def load(data_path):
@@ -13,7 +13,7 @@ data = load("dataset.pickle")
 # data = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle")
 
 
-st.markdown("# Some key insights")
+st.title("Key insights from the data")
 
 
 st.write('----------------------------------------------------------------------------------------------------------------')
