@@ -94,12 +94,12 @@ st.title('Car Price Prediction App')
 #### Load necessary obects
 
 image = Image.open("photo.jpeg")
-data, model = pd.read_pickle("dataset.pickle", 
-                    "model.pickle")
+data  = pd.read_pickle("dataset.pickle", compression=None)
+model = pd.read_pickle("model.pickle",   compression=None)
 
 # image = Image.open("/Users/vasiliskalyvas/Documents/GitHub/streamlit/photo.jpeg")
-# data, model = load("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", 
-#                     "/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle")
+# data  = pd.read_pickle("/Users/vasiliskalyvas/Documents/GitHub/streamlit/dataset.pickle", compression=None)
+# model = pd.read_pickle("/Users/vasiliskalyvas/Documents/GitHub/streamlit/model.pickle", compression=None)
 
 
 st.image(image, use_column_width=True)
